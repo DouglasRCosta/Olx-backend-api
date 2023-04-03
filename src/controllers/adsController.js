@@ -11,7 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 const { Mongoose, ObjectId, isValidObjectId } = require('mongoose');
 const jimp = require('jimp');
 
-
+let Base = 'http://localhost:5000'
 const addImage = async (buffer) => {
     let newName = `${uuidv4()}.jpg`;
     let tmpImg = await jimp.read(buffer);
@@ -27,10 +27,14 @@ module.exports = {
         const cats = await Categories.find();
         let category = [];
 
+        if(cats.length < 5){
+            let temp = [{name:'baby',slug:"baby"},{name:'cars',slug:"cars"},{name:'clothes',slug:"clothes"},{name:'electronics',slug:"electronics"},{name:'sports',slug:"sports"}]
+            await Categories.create(temp)
+        }
         for (let i in cats) {
             category.push({
                 ...cats[i]._doc,
-                img: `${process.env.BASE}/assets/images/${cats[i].slug}.png`
+                img: `${Base}/assets/images/${cats[i].slug}.png`
             })
         }
         res.json({ category })
@@ -157,9 +161,9 @@ module.exports = {
             let defaultImage = ads[i].images.find(e => e.default);
 
             if (defaultImage) {
-                image = `${process.env.BASE}/media/${defaultImage.url}` || `http://localhost:5000/media/${defaultImage.url}`;
+                image = `${Base}/media/${defaultImage.url}` || `http://localhost:5000/media/${defaultImage.url}`;
             } else {
-                image = `${process.env.BASE}/media/defaultImg.jpg` || `http://localhost:5000/media/defaultImg.jpg`;
+                image = `${Base}/media/defaultImg.jpg` || `http://localhost:5000/media/defaultImg.jpg`;
             }
 
             simpleAds.push({
@@ -201,10 +205,10 @@ module.exports = {
         let images = [];
         if (ad.images.length > 0) {
             for (let i in ad.images) {
-                images.push(`${process.env.BASE}/media/${ad.images[i].url}` || `http://localhost:5000/media/${ad.images[i].url}`)
+                images.push(`${Base}/media/${ad.images[i].url}` || `http://localhost:5000/media/${ad.images[i].url}`)
             }
         } else {
-            images.push(`${process.env.BASE}/media/defaultImg.jpg`) || `http://localhost:5000/media/defaultImg.jpg`;
+            images.push(`${Base}/media/defaultImg.jpg`) || `http://localhost:5000/media/defaultImg.jpg`;
         }
 
         let category = await Categories.findById(ad.category).exec();
@@ -218,10 +222,10 @@ module.exports = {
             for (let i in otherAd) {
 
                 if (otherAd[i]._id.toString() != ad._id.toString()) {
-                    let image = `${process.env.BASE}/media/defaultImg.jpg`|| `http://localhost:5000/media/defaultImg.jpg`;
+                    let image = `${Base}/media/defaultImg.jpg`|| `http://localhost:5000/media/defaultImg.jpg`;
                     let defautImage = otherAd[i].images.find(e => e.default);
                     if (defautImage) {
-                        image = `${process.env.BASE}/media/${defautImage.url}`|| `http://localhost:5000/media/${defautImage.url}`;
+                        image = `${Base}/media/${defautImage.url}`|| `http://localhost:5000/media/${defautImage.url}`;
                     }
 
                     others.push({

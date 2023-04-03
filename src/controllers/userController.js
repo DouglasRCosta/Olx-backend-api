@@ -11,6 +11,10 @@ const mongoose = require('mongoose');
 module.exports = {
     getState: async (req, res) => {
         let states = await State.find({ name: { $regex: '' } });
+        if(states.length < 3){
+            let states = [{name:'SP'},{name:'RJ'},{name:'AM'}]
+            await State.create(states   )
+        }
         res.json({
             states: states,
         })
